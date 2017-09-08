@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  */
 public class Neo4jRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
 
-	private Session session;
+	protected Session session;
 	
 	/**
 	 * Creates a new {@link Neo4jRepositoryFactoryBean} for the given repository interface.
