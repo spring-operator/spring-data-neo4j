@@ -374,7 +374,7 @@ determines the actual one used.
 
 It is highly recommended that users understand how Spring Transactions work. Below are some excellent resources:
 
-* http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/html/transaction.html[Spring Transaction Management]
+* https://docs.spring.io/spring/docs/{springVersion}/spring-framework-reference/data-access.html#transaction[Spring Transaction Management]
 * http://graphaware.com/neo4j/2016/09/30/upgrading-to-sdn-42.html[Upgrading to Spring Data Neo4j 4.2]
 
 === Read only Transactions
@@ -500,8 +500,9 @@ Spring Data Neo4J allows developers to use JSR-303 annotations like `@NotNull` e
 While this is provided it's not a best practice. It is highly recommended to create JSR-303 annotations on actual Java Beans,
 similar to things like Data Transfer Objects (DTOs).
 
+[[reference_programming-model_conversion]]
 === Conversion Service
-It is possible to have Spring Data Neo4j use converters registered with http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html#core-convert[Spring's ConversionService].
+It is possible to have Spring Data Neo4j use converters registered with http://docs.spring.io/spring/docs/{springVersion}/spring-framework-reference/html/validation.html#core-convert[Spring's ConversionService].
 In order to do this, provide `org.springframework.data.neo4j.conversion.MetaDataDrivenConversionService` as a Spring bean.
 
 .Provide MetaDataDrivenConversionService as a Spring bean
