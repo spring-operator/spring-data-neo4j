@@ -25,23 +25,24 @@ import org.springframework.data.neo4j.mapping.Neo4jPersistentEntity;
 import org.springframework.data.neo4j.mapping.Neo4jPersistentProperty;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Implements OGM instantiation callback in order to user Spring Data Commons infrastructure for instantiation.
  *
  * @author Nicolas Mervaillie
+ * @author Gerrit Meier
  */
 class OgmEntityInstantiatorAdapter implements EntityInstantiator {
 
 	private final Neo4jMappingContext context;
-	private ConversionService conversionService;
-	private final EntityInstantiators instantiators;
+	private final EntityInstantiators instantiators = new EntityInstantiators();
+	private final ConversionService conversionService;
 
-	OgmEntityInstantiatorAdapter(Neo4jMappingContext context, @Nullable ConversionService conversionService) {
+	OgmEntityInstantiatorAdapter(Neo4jMappingContext context, ConversionService conversionService) {
 		Assert.notNull(context, "MappingContext cannot be null");
 		this.context = context;
 		this.conversionService = conversionService;
-		instantiators = new EntityInstantiators();
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -57,13 +58,14 @@ class OgmEntityInstantiatorAdapter implements EntityInstantiator {
 
 	private ParameterValueProvider<Neo4jPersistentProperty> getParameterProvider(Map<String, Object> propertyValues,
 			ConversionService conversionService) {
+
 		return new Neo4jPropertyValueProvider(propertyValues, conversionService);
 	}
 
 	private static class Neo4jPropertyValueProvider implements ParameterValueProvider<Neo4jPersistentProperty> {
 
+		private final ConversionService conversionService;
 		private Map<String, Object> propertyValues;
-		private ConversionService conversionService;
 
 		Neo4jPropertyValueProvider(Map<String, Object> propertyValues, ConversionService conversionService) {
 			this.conversionService = conversionService;
@@ -76,11 +78,11 @@ class OgmEntityInstantiatorAdapter implements EntityInstantiator {
 		@Nullable
 		public Object getParameterValue(PreferredConstructor.Parameter parameter) {
 			Object value = propertyValues.get(parameter.getName());
-			if (value == null || conversionService == null) {
+			if (value == null || conversionService == null || ClassUtils.isAssignableValue(parameter.getRawType(), value)) {
 				return value;
-			} else {
-				return conversionService.convert(value, parameter.getType().getType());
 			}
+
+			return conversionService.convert(value, parameter.getType().getType());
 		}
 	}
 }
