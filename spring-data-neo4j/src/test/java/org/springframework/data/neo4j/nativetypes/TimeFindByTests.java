@@ -14,6 +14,12 @@ package org.springframework.data.neo4j.nativetypes;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.TemporalAmount;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assume;
@@ -22,10 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.testutil.MultiDriverTestClass;
-import org.neo4j.ogm.types.spatial.CartesianPoint2d;
-import org.neo4j.ogm.types.spatial.CartesianPoint3d;
-import org.neo4j.ogm.types.spatial.GeographicPoint2d;
-import org.neo4j.ogm.types.spatial.GeographicPoint3d;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,64 +38,81 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@ContextConfiguration(classes = SpatialFindByTest.SpatialPersistenceContext.class)
+@ContextConfiguration(classes = TimeFindByTests.TimePersistenceContext.class)
 @RunWith(SpringRunner.class)
-public class SpatialFindByTest extends MultiDriverTestClass {
+public class TimeFindByTests extends MultiDriverTestClass {
 
 	private static org.neo4j.ogm.config.Configuration configuration;
 
-	@Autowired private SpatialDomainRepository repository;
+	@Autowired private TimeDomainRepository repository;
 
-	private SpatialDomain spatialDomain;
+	private TimeDomain timeDomain;
+	private Date date;
+	private LocalDate localDate;
+	private LocalDateTime localDateTime;
+	private Period period;
+	private TemporalAmount temporalAmount;
+	private Duration duration;
 
 	@Before
 	public void setUpDomainObject() {
 		Assume.assumeFalse(runsInHttpMode());
 		repository.deleteAll();
 
-		spatialDomain = new SpatialDomain();
-		GeographicPoint2d geographicPoint2d = new GeographicPoint2d(1, 2);
-		GeographicPoint3d geographicPoint3d = new GeographicPoint3d(3, 4, 5);
-		CartesianPoint2d cartesianPoint2d = new CartesianPoint2d(6, 7);
-		CartesianPoint3d cartesianPoint3d = new CartesianPoint3d(8, 9, 10);
+		timeDomain = new TimeDomain();
 
-		spatialDomain.setGeographicPoint2d(geographicPoint2d);
-		spatialDomain.setGeographicPoint3d(geographicPoint3d);
-		spatialDomain.setCartesianPoint2d(cartesianPoint2d);
-		spatialDomain.setCartesianPoint3d(cartesianPoint3d);
+		date = new Date();
+		localDate = LocalDate.now();
+		localDateTime = LocalDateTime.now();
+		period = Period.ofMonths(2);
+		temporalAmount = period;
+		duration = Duration.ofHours(3);
 
-		repository.save(spatialDomain);
+		timeDomain.setDate(date);
+		timeDomain.setLocalDate(localDate);
+		timeDomain.setLocalDateTime(localDateTime);
+
+		timeDomain.setPeriod(period);
+		timeDomain.setDuration(duration);
+
+		timeDomain.setTemporalAmount(temporalAmount);
+
+		repository.save(timeDomain);
 	}
 
 	@Test
-	public void findByGeographicPoint2d() {
-		GeographicPoint2d geographicPoint2d = new GeographicPoint2d(1, 2);
-
-		List<SpatialDomain> result = repository.findByGeographicPoint2d(geographicPoint2d);
+	public void findByDate() {
+		List<TimeDomain> result = repository.findByDate(date);
 		assertThat(result).hasSize(1);
 	}
 
 	@Test
-	public void findByGeographicPoint3d() {
-		GeographicPoint3d geographicPoint3d = new GeographicPoint3d(3, 4, 5);
-
-		List<SpatialDomain> result = repository.findByGeographicPoint3d(geographicPoint3d);
+	public void findByLocalDate() {
+		List<TimeDomain> result = repository.findByLocalDate(localDate);
 		assertThat(result).hasSize(1);
 	}
 
 	@Test
-	public void findByCartesianPoint2d() {
-		CartesianPoint2d cartesianPoint2d = new CartesianPoint2d(6, 7);
-
-		List<SpatialDomain> result = repository.findByCartesianPoint2d(cartesianPoint2d);
+	public void findByLocalDateTime() {
+		List<TimeDomain> result = repository.findByLocalDateTime(localDateTime);
 		assertThat(result).hasSize(1);
 	}
 
 	@Test
-	public void findByCartesianPoint3d() {
-		CartesianPoint3d cartesianPoint3d = new CartesianPoint3d(8, 9, 10);
+	public void findByPeriod() {
+		List<TimeDomain> result = repository.findByPeriod(period);
+		assertThat(result).hasSize(1);
+	}
 
-		List<SpatialDomain> result = repository.findByCartesianPoint3d(cartesianPoint3d);
+	@Test
+	public void findByDuration() {
+		List<TimeDomain> result = repository.findByDuration(duration);
+		assertThat(result).hasSize(1);
+	}
+
+	@Test
+	public void findByTemporalAmount() {
+		List<TimeDomain> result = repository.findByTemporalAmount(temporalAmount);
 		assertThat(result).hasSize(1);
 	}
 
@@ -104,7 +123,7 @@ public class SpatialFindByTest extends MultiDriverTestClass {
 	@Configuration
 	@EnableNeo4jRepositories
 	@EnableTransactionManagement
-	static class SpatialPersistenceContext {
+	static class TimePersistenceContext {
 
 		@Bean
 		public PlatformTransactionManager transactionManager() {
