@@ -13,17 +13,12 @@
 package org.springframework.data.neo4j.nativetypes;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.springframework.data.neo4j.nativetypes.SpatialPersistenceContextConfiguration.*;
 
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.testutil.MultiDriverTestClass;
 import org.neo4j.ogm.types.spatial.CartesianPoint2d;
 import org.neo4j.ogm.types.spatial.CartesianPoint3d;
 import org.neo4j.ogm.types.spatial.GeographicPoint2d;
@@ -31,6 +26,7 @@ import org.neo4j.ogm.types.spatial.GeographicPoint3d;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -38,20 +34,13 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Gerrit Meier
  * @author Michael J. Simons
  */
-@ContextConfiguration(classes = SpatialPersistenceContextConfiguration.class)
 @RunWith(SpringRunner.class)
-public class SpatialNearTests extends MultiDriverTestClass {
-
-	@Autowired
-	private Configuration configuration;
+@ContextConfiguration(classes = SpatialPersistenceContextConfiguration.class)
+@DirtiesContext
+public class SpatialNearTests {
 
 	@Autowired
 	private SpatialDomainRepository repository;
-
-	@Before
-	public void ensureSupportedMode() {
-		Assume.assumeFalse(runsInHttpMode(configuration));
-	}
 
 	@Test
 	public void findByNearCartesianPoint2d() {
