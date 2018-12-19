@@ -30,6 +30,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.neo4j.conversion.Poef;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.support.Neo4jPersistenceExceptionTranslator;
 import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
@@ -211,6 +212,8 @@ public class Neo4jRepositoryConfigurationExtension extends RepositoryConfigurati
 					.addConstructorArgReference(this.neo4jMappingContextBeanName)::getBeanDefinition;
 			registerIfNotAlreadyRegistered(rootBeanDefinition, registry, ENTITY_INSTANTIATOR_CONFIGURATION_BEAN_NAME, source);
 		}
+
+		registry.registerBeanDefinition("foobar", new RootBeanDefinition(Poef.class));
 	}
 
 	/**
